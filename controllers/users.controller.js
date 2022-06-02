@@ -58,7 +58,6 @@ const getMyProducts = catchAsync(async (req, res, next) => {
   const { sessionUser } = req;
   const myProducts = await Product.findAll({ where: { userId: sessionUser.id } })
 
-  console.log(sessionUser);
   res.status(200).json({
     status: 'Success',
     products: myProducts
