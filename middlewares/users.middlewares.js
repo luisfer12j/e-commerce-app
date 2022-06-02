@@ -45,7 +45,6 @@ const protectAdmin = catchAsync(async (req, res, next) => {
   if (req.sessionUser.role !== 'admin') {
     return next(new AppError('Access not granted', 403));
   }
-
   next();
 });
 

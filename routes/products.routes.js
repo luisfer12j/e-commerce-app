@@ -1,10 +1,10 @@
 const express = require('express');
 
 //Middlewares
-const { protectToken } = require('../middlewares/users.middlewares');
+const { protectToken, protectAdmin } = require('../middlewares/users.middlewares');
 
 //Controllers
-const { getAllProducts, createProduct, getProductById, getAllCategories, createCategory } = require('../controllers/products.controller');
+const { getAllProducts, createProduct, getProductById, getAllCategories, createCategory, updateProduct, deleteProduct, updateCategory } = require('../controllers/products.controller');
 
 
 const router = express.Router();
@@ -12,13 +12,14 @@ const router = express.Router();
 router.get('/', getAllProducts);
 router.get('/categories', getAllCategories);
 router.get('/:id', getProductById);
-router.route('/:id').patch().delete();
 
 //Protect routes
 router.use(protectToken);
 
+router.route('/:id').patch(updateProduct).delete(deleteProduct);
 router.post('/', createProduct);
+router.use(protectAdmin);
 router.post('/categories', createCategory);
-// router.patch('/categories/:id',);
+router.patch('/categories/:id', updateCategory);
 
 module.exports = { productsRouter: router }
