@@ -5,6 +5,7 @@ const {
     userExists,
     protectToken,
     protectAccountOwner,
+    protectAdmin
 } = require('../middlewares/users.middlewares');
 const { createUserValidations, checkValidations } = require('../middlewares/validations.middlewares');
 
@@ -29,9 +30,8 @@ router.post('/login', login);
 // Apply protectToken middleware
 router.use(protectToken);
 
-router.get('/', getAllUsers);
 
-// router.get('/check-token', checkToken);
+
 router.get('/me', getMyProducts);
 router.get('/orders', getMyOrders);
 router.get('/orders/:id', getMyOrderById);
@@ -40,5 +40,8 @@ router
     .route('/:id')
     .patch(userExists, protectAccountOwner, updateUser)
     .delete(userExists, protectAccountOwner, deleteUser);
+
+//An additional route to managing all accounts
+router.get('/', protectAdmin, getAllUsers);
 
 module.exports = { usersRouter: router };

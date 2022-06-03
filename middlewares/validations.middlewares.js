@@ -28,6 +28,9 @@ const createProductValidations = [
   body('quantity')
     .notEmpty()
     .withMessage('Quantity cannot be empty'),
+  body('categoryId')
+    .notEmpty()
+    .withMessage('Quantity cannot be empty'),
 ]
 
 const checkValidations = (req, res, next) => {

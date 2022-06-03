@@ -66,23 +66,34 @@ const getMyProducts = catchAsync(async (req, res, next) => {
 
 const updateUser = catchAsync(async (req, res, next) => {
   const { user } = req;
-  const { name } = req.body;
+  const { name, email } = req.body;
 
-  await user.update({ name });
+  await user.update({ name, email });
 
   res.status(200).json({ status: 'success' });
 });
 
 const getMyOrders = catchAsync(async (req, res, next) => {
   const { sessionUser } = req;
-  const myOrders = await Order.findAll({ where: { userId: sessionUser.id }, include: [{ model: Cart, ProductInCart }] })
+  const myOrders = await Order.findAll({
+    where: { userId: sessionUser.id },
+    include: [{ model: Cart, include: [{ model: ProductInCart }] }]
+  })
   res.status(200).json({ status: 'success', orders: myOrders })
 });
 
 const getMyOrderById = catchAsync(async (req, res, next) => {
   const { sessionUser } = req;
   const { id } = req.params
-  const order = await Order.findOne({ where: { id, userId: sessionUser.id }, include: [{ model: Cart, ProductInCart }] })
+  const order = await Order.findOne({
+    where: { id, userId: sessionUser.id },
+    include: [{
+      model: Cart, include: [{
+        model: ProductInCart, required: false,
+        where: { status: 'purchased' },
+      }]
+    }]
+  })
   if (!order) {
     return next(new AppError('Order not found', 404));
   }
