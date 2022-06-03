@@ -9,14 +9,18 @@ const { ProductInCart } = require('../models/productInCart.model');
 
 const validCart = catchAsync(async (req, res, next) => {
     const { sessionUser } = req;
-    const cart = await Cart.findOne({ where: { status: 'active', userId: sessionUser.id } })
+    const cart = await Cart.findOne({
+        where: { status: 'active', userId: sessionUser.id },
+        include: [{ model: ProductInCart, required: false, where: { status: 'active' }, include: [{ model: Product }] }]
+    })
     if (!cart) {
         const newCart = await Cart.create({ userId: sessionUser.id });
         req.cart = newCart;
         next();
+    } else {
+        req.cart = cart;
+        next();
     }
-    req.cart = cart;
-    next();
 })
 
 const validQuantity = catchAsync(async (req, res, next) => {
@@ -36,9 +40,7 @@ const validProductExist = catchAsync(async (req, res, next) => {
     const { cart, product } = req;
     const { quantity } = req.body;
     const productRepeated = await ProductInCart.findOne({ where: { cartId: cart.id, productId: product.id } });
-    console.log(!productRepeated);
     if (!productRepeated) {
-        console.log('hola');
         next();
     } else {
         if (productRepeated.status === 'removed') {
