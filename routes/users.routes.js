@@ -6,25 +6,23 @@ const {
     protectToken,
     protectAccountOwner,
 } = require('../middlewares/users.middlewares');
-
+const { createUserValidations, checkValidations } = require('../middlewares/validations.middlewares');
 
 //Controllers
 const {
     getAllUsers,
     createUser,
-    getUserById,
     getMyProducts,
     updateUser,
     deleteUser,
     login,
-    checkToken,
     getMyOrders,
     getMyOrderById,
 } = require('../controllers/users.controller');
 
 const router = express.Router();
 
-router.post('/', createUser);
+router.post('/', createUserValidations, checkValidations, createUser);
 
 router.post('/login', login);
 
@@ -40,7 +38,6 @@ router.get('/orders/:id', getMyOrderById);
 
 router
     .route('/:id')
-    // .get(userExists, getUserById)
     .patch(userExists, protectAccountOwner, updateUser)
     .delete(userExists, protectAccountOwner, deleteUser);
 
